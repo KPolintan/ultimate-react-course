@@ -1,9 +1,7 @@
 import { useEffect, useRef, useState } from "react";
-
 import StarRating from "./StarRating";
-import { useLocalStorageState } from "./useLocalStorageState";
-import { useKey } from "./useKey";
 import { useMovies } from "./useMovies";
+import { useLocalStorageState } from "./useLocalStorageState";
 
 const KEY = 'c1de7d41';
 
@@ -118,27 +116,22 @@ const Logo = () => {
 function Search({ query, setQuery }) {
   const inputEl = useRef(null);
 
-  useKey('Enter', () => {
-    if (document.activeElement === inputEl.current) return;
-    inputEl.current.focus(); 
-    setQuery('');
-  })
+  useEffect (() => {
 
-  // useEffect (() => {
+    const callback = e => { 
 
-  //   const callback = e => { 
+      if (document.activeElement === inputEl.current) return;
 
-  //     if (e.code === 'Enter') {
-  //       if (document.activeElement === inputEl.current) return;
-  //       inputEl.current.focus(); 
-  //       setQuery('');
-  //     }
-  //   }
+      if (e.code === 'Enter') {
+        inputEl.current.focus(); 
+        setQuery('');
+      }
+    }
 
-  //   document.addEventListener('keydown', callback);
-  //   return () => document.addEventListener('keydown', callback);
+    document.addEventListener('keydown', callback);
+    return () => document.addEventListener('keydown', callback);
 
-  // }, [setQuery]);
+  }, [setQuery])
 
   // useEffect(() => {
   //   const el = document.querySelector('.search');
@@ -303,21 +296,19 @@ const MovieDetails = (({ selectedID, onCloseMovie, onAddWatched, watched }) => {
     // setAvgRating(avgRating => (avgRating + userRating)/2);
   }
 
-  useKey('Escape', onCloseMovie);
+  useEffect(() => {
+    const callback = e => {
+      if (e.code === 'Escape') { 
+        onCloseMovie(); 
+        console.log('closing.');
+      }
+    }
+    document.addEventListener('keydown', callback);
 
-  // useEffect(() => {
-  //   const callback = e => {
-  //     if (e.code === 'Escape') { 
-  //       onCloseMovie(); 
-  //       console.log('closing.');
-  //     }
-  //   }
-  //   document.addEventListener('keydown', callback);
-
-  //   return () => {
-  //     document.removeEventListener('keydown', callback);
-  //   }
-  // }, [onCloseMovie]);
+    return () => {
+      document.removeEventListener('keydown', callback);
+    }
+  }, [onCloseMovie]);
 
   console.log(title, year);
 
